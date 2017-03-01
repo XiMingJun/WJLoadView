@@ -28,14 +28,27 @@
     }
     return self;
 }
+- (instancetype)init{
+    
+    self = [super init];
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+- (void)layoutSubviews{
+    
+    [super layoutSubviews];
+    [self makeView];
+}
 /**公共参数初始化配置*/
 - (void)commonInit{
     //默认各状态显示文案
-//    [self setLoadViewImage:[UIImage sd_animatedGIFNamed:@"jump"] stateString:@"努力加载中..." forState:WJLoadStateLoading];
+    //    [self setLoadViewImage:[UIImage sd_animatedGIFNamed:@"jump"] stateString:@"努力加载中..." forState:WJLoadStateLoading];
     [self setLoadViewImages:@[[UIImage imageNamed:@"jump1"],[UIImage imageNamed:@"jump2"],[UIImage imageNamed:@"jump3"],[UIImage imageNamed:@"jump4"]] stateString:@"努力加载中..." forState:WJLoadStateLoading];
     [self setLoadViewImage:[UIImage imageNamed:@"img_xiaoqian_cry"] stateString:@"网络不太给力" forState:WJLoadStateFailed];
     [self setLoadViewImage:[UIImage imageNamed:@"icon_no_record"] stateString:@"暂无记录" forState:WJLoadStateNoData];
-
+    
 }
 - (void)makeView{
     // 设置普通状态的动画图片
@@ -44,19 +57,16 @@
     self.gifView.frame = CGRectMake(0,0, tempImage.size.width,tempImage.size.height);
     self.gifView.backgroundColor = [UIColor clearColor];
     self.gifView.contentMode = UIViewContentModeScaleAspectFit;
-//    self.gifView.center = self.center;
+    //    self.gifView.center = self.center;
     CGPoint gifViewCenter = self.gifView.center;
     gifViewCenter.y = self.center.y - 64;
     gifViewCenter.x = self.center.x;
     
     self.gifView.center = gifViewCenter;
     
-    self.stateLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.gifView.frame.origin.x, CGRectGetMaxY(self.gifView.frame) + 10, self.gifView.frame.size.width, 20)];
-    self.stateLabel.textAlignment = NSTextAlignmentCenter;
-    self.stateLabel.font = [UIFont systemFontOfSize:17.0f];
-    self.stateLabel.textColor = UIColorFromRGB(0x666666);
+    self.stateLabel = [self stateLabel];
+    self.stateLabel.frame = CGRectMake(self.gifView.frame.origin.x, CGRectGetMaxY(self.gifView.frame) + 10, self.gifView.frame.size.width, 20);
     self.stateLabel.text = self.stateStrings[@(WJLoadStateLoading)];
-    [self addSubview:self.stateLabel];
     
     /* 根据图片设置控件的高度 */
     UIImage *image = [UIImage imageNamed:@"jump"];
@@ -74,7 +84,17 @@
     }
     return _gifView;
 }
-
+- (UILabel *)stateLabel{
+    
+    if (!_stateLabel) {
+        UILabel *stateLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.gifView.frame.origin.x, CGRectGetMaxY(self.gifView.frame) + 10, self.gifView.frame.size.width, 20)];
+        stateLabel.textAlignment = NSTextAlignmentCenter;
+        stateLabel.font = [UIFont systemFontOfSize:17.0f];
+        stateLabel.textColor = UIColorFromRGB(0x666666);
+        [self addSubview:_stateLabel = stateLabel];
+    }
+    return _stateLabel;
+}
 - (NSMutableDictionary *)stateImages
 {
     if (!_stateImages) {
@@ -83,7 +103,7 @@
     return _stateImages;
 }
 - (NSMutableDictionary *)stateStrings{
-
+    
     if (!_stateStrings) {
         self.stateStrings = [NSMutableDictionary dictionary];
     }
@@ -102,7 +122,7 @@
     }
 }
 - (void)setLoadViewImages:(NSArray *)images stateString:(NSString *)stateString forState:(WJLoadState)state{
-
+    
     if (images.count <= 0) {
         NSLog(@"图片数组为空");
     }
@@ -146,7 +166,7 @@
         }
         self.stateLabel.text = self.stateStrings[@(state)];
         UIImage *tempImage =  [UIImage imageNamed:@"img_xiaoqian_cry"];
-
+        
         self.gifView.frame = CGRectMake(0,0, tempImage.size.width,tempImage.size.height);
         CGPoint gifViewCenter = self.gifView.center;
         gifViewCenter.y = self.center.y - 64;
@@ -158,7 +178,7 @@
             self.stateLabel.textColor = UIColorFromRGB(0x666666);
         }
         else if (state == WJLoadStateNoData) {
-        
+            
             self.stateLabel.textColor = UIColorFromRGB(0xcccccc);
         }
         
@@ -206,7 +226,7 @@
             myRetryBlock();
         }
     });
-
+    
     
 }
 
@@ -220,7 +240,7 @@
 - (void)hide:(UIView *)view After:(NSTimeInterval)duration{
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [view removeFromSuperview];
-
+        
     });
 }
 //- (void)setLoadViewImage:(UIImage *)image forState:(WJLoadState)state{
